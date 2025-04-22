@@ -1,0 +1,17 @@
+{
+  "name": "building_full_stack_project-i",
+  "version": "1.0.0",
+  "description": "CRUD ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "bhabin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.9"
+  }
+}
