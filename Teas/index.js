@@ -41,6 +41,23 @@ app.get("/tea/:id", (req, res) => {
   }
 });
 
+// update tea properties
+app.put("/tea/:id", (req, res) => {
+  const _id = parseInt(req.params.id);
+  const { name, price } = req.body;
+  const teaIndex = teaList.findIndex((tea) => tea._id == _id);
+  if (teaIndex === -1) {
+    return res.status(404).json({
+      message: "Tea not found",
+    });
+  }
+
+  (teaList[teaIndex].name = name), (teaList[teaIndex].price = price);
+  res.status(200).json({
+    message: "Updated successfully !!",
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Express Server listen on PORT ${PORT}`);
 });
