@@ -58,6 +58,22 @@ app.put("/tea/:id", (req, res) => {
   });
 });
 
+//delete tea by id
+app.delete("/tea/:id", (req, res) => {
+  const _id = parseInt(req.params.id);
+  const teaIndex = teaList.findIndex((tea) => tea._id === _id);
+  if (teaIndex === -1) {
+    return res.status(404).json({
+      message: "Tea not found !!",
+    });
+  }
+  const removeTea = teaList.splice(teaIndex, 1);
+  res.status(200).json({
+    message: "Remove tea successfully !!",
+    data: removeTea,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Express Server listen on PORT ${PORT}`);
 });
