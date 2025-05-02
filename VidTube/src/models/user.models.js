@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
       trim: true,
       lowercase: true,
       index: true,
@@ -50,13 +49,13 @@ const userSchema = new mongoose.Schema(
     refreshToken: { type: String },
   },
   {
-    timestamp: true,
+    timestamps: true,
   }
 );
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
