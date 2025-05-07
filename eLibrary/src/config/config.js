@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const _config = {
-  PORT: process.env.PORT,
-  FRONTEND_DOMAIN: process.env.FRONTEND_DOMAIN,
-  MONGO_CONNECTION_STRING: process.env.MONGO_CONNECTION_STRING,
+  port: process.env.PORT,
+  frontendDomain: process.env.FRONTEND_DOMAIN,
+  databaseUrl: process.env.MONGO_CONNECTION_STRING,
+  nodeEnv: process.env.NODE_ENV,
 };
 
 // Ensures that config remains read-only
