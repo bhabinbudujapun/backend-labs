@@ -7,6 +7,7 @@ const _config = {
   frontendDomain: process.env.FRONTEND_DOMAIN,
   databaseUrl: process.env.MONGO_CONNECTION_STRING,
   nodeEnv: process.env.NODE_ENV,
+  secretKey: process.env.SECRET_KEY,
 };
 
 // Ensures that config remains read-only
