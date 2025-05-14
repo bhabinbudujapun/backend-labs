@@ -1,8 +1,15 @@
 import express from "express";
-import { createBook, listBooks } from "./book.controller.js";
+import {
+  listBooks,
+  createBook,
+  updateBook,
+  deleteBook,
+  getSingleBook,
+} from "./book.controller.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
+import authenticate from "../middlewares/authenticate.js";
 
 const bookRoute = express.Router();
 
@@ -16,6 +23,7 @@ const upload = multer({
 
 bookRoute.post(
   "/",
+  authenticate,
   upload.fields([
     { name: "coverImage", maxCount: 1 },
     { name: "file", maxCount: 1 },
@@ -23,6 +31,18 @@ bookRoute.post(
   createBook
 );
 
+bookRoute.patch(
+  "/:bookId",
+  authenticate,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  updateBook
+);
+
 bookRoute.get("/", listBooks);
+bookRoute.get("/:bookId", getSingleBook);
+bookRoute.delete("/:bookId", authenticate, deleteBook);
 
 export default bookRoute;
