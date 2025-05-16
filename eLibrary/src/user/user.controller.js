@@ -4,96 +4,88 @@ import User from "./user.model.js";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
-// Register new users
+// ===============================
+// Register a New User
+// ===============================
 const registerUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
-  // Valid input fields
+  // Step 1: Validate request fields
   if (!name || !email || !password) {
-    next(createHttpError(400, "All fields are required!"));
+    return next(createHttpError(400, "All fields are required!"));
   }
 
   try {
-    // Check if email already exists in DB
+    // Step 2: Check if the email is already registered
     const userExist = await User.findOne({ email });
     if (userExist) {
       return next(createHttpError(400, "Email is already in use!"));
     }
-  } catch (error) {
-    return next(createHttpError(500, "Error while getting user"));
-  }
 
-  // Password --> Hash
-  const hashPassword = await bcrypt.hash(password, 10);
+    // Step 3: Hash the user's password
+    const hashPassword = await bcrypt.hash(password, 10);
 
-  let newUser;
-  try {
-    newUser = await User.create({
-      // Create new user
+    // Step 4: Create new user in the database
+    const newUser = await User.create({
       name,
       email,
       password: hashPassword,
     });
-  } catch (error) {
-    return next(createHttpError(500, "Error while creating user"));
-  }
 
-  // Token generation JWT
-  try {
-    const generateToken = jwt.sign({ sub: newUser._id }, config.secretKey, {
-      expiresIn: "3d",
+    // Step 5: Generate JWT token for the new user
+    const token = jwt.sign({ sub: newUser._id }, config.secretKey, {
+      expiresIn: "3d", // token valid for 3 days
     });
 
+    // Step 6: Send success response
     res.status(201).json({
-      // Respond with success message
       message: "User registered successfully",
       user: { name, email },
-      accessToken: generateToken,
+      accessToken: token,
     });
   } catch (error) {
-    return next(createHttpError(500, "Error while signing the jwt token"));
+    // Handle unexpected server errors
+    return next(createHttpError(500, error.message || "Registration failed"));
   }
 };
 
-// Login register user
+// ===============================
+// Login an Existing User
+// ===============================
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Validate input fields
+  // Step 1: Validate login fields
   if (!email || !password) {
-    next(createHttpError(400, "All fields are required!!"));
+    return next(createHttpError(400, "All fields are required!"));
   }
 
-  // Find user by email
-  const user = await User.findOne({ email });
   try {
+    // Step 2: Find the user by email
+    const user = await User.findOne({ email });
     if (!user) {
-      next(createHttpError(400, "User not found."));
+      return next(createHttpError(400, "Invalid email or password!"));
     }
-  } catch (error) {
-    next(createHttpError(500, "Server error, please try again later."));
-  }
 
-  // Compare password
-  const isMatch = await bcrypt.compare(password, user.password);
-  try {
+    // Step 3: Compare the entered password with hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return next(createHttpError(400, "Email or password incorrect!"));
+      return next(createHttpError(400, "Invalid email or password!"));
     }
-  } catch (error) {
-    return next(createHttpError(500, "Server error, please try again later."));
-  }
 
-  try {
-    // Generate JWT token
+    // Step 4: Generate JWT token on successful login
     const token = jwt.sign({ sub: user._id }, config.secretKey, {
       expiresIn: "3d",
     });
 
-    // Send response
-    res.json({ accessToken: token });
+    // Step 5: Send login success response
+    res.json({
+      message: "Login successful",
+      accessToken: token,
+    });
   } catch (error) {
-    next(error);
+    // Handle unexpected server errors
+    return next(createHttpError(500, error.message || "Login failed"));
   }
 };
 
