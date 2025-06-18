@@ -11,12 +11,12 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: config.FRONTEND_DOMAIN,
+    origin: config.frontendDomain,
   })
 );
 
 app.get("/", (req, res) => {
-  res.send("Welcome to our web application !!");
+  res.send(`Welcome to our web application !! ${config.frontendDomain}`);
 });
 
 app.use("/api/users/", userRoute);
